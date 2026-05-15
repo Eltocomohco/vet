@@ -1,0 +1,92 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    function getUserData() {
+      return get(/databases/$(database)/documents/usuarios/$(request.auth.uid)).data;
+    }
+    function isClinicaMember(clinicaId) {
+      return isAuthenticated() && getUserData() != null && getUserData().clinicaId == clinicaId;
+    }
+    function isClinicaAdmin(clinicaId) {
+      return isClinicaMember(clinicaId) && getUserData().rol == 'admin';
+    }
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    // Clinicas: lectura pública para reserva online; escritura solo admin
+    match /clinicas/{clinicaId} {
+      allow read: if true;
+      allow create: if isAuthenticated();
+      allow update, delete: if isClinicaAdmin(clinicaId);
+    }
+
+    // Mascotas (colección raíz)
+    match /mascotas/{mascotaId} {
+      allow read: if isClinicaMember(resource.data.clinicaId);
+      allow create: if isClinicaMember(request.resource.data.clinicaId);
+      allow update, delete: if isClinicaMember(resource.data.clinicaId);
+
+      // Vacunas (subcolección de mascota)
+      match /vacunas/{vacunaId} {
+        allow read: if isClinicaMember(get(/databases/$(database)/documents/mascotas/$(mascotaId)).data.clinicaId);
+        allow create: if isClinicaMember(get(/databases/$(database)/documents/mascotas/$(mascotaId)).data.clinicaId);
+        allow update, delete: if isClinicaMember(get(/databases/$(database)/documents/mascotas/$(mascotaId)).data.clinicaId);
+      }
+    }
+
+    // Citas (colección raíz)
+    match /citas/{citaId} {
+      allow read: if isClinicaMember(resource.data.clinicaId);
+      allow create: if isClinicaMember(request.resource.data.clinicaId);
+      allow update, delete: if isClinicaMember(resource.data.clinicaId);
+    }
+
+    // Citas públicas (reserva online) - permite crear citas sin autenticación
+    // Solo permitimos CREATE sin auth; read/update/delete requieren auth
+    match /citas/{citaId} {
+      allow create: if !isAuthenticated()
+        && request.resource.data.clinicaId != null
+        && request.resource.data.estado == 'pendiente'
+        && request.resource.data.esReservaPublica == true;
+    }
+
+    // Mascotas públicas (reserva online) - permite crear mascotas temporales sin auth
+    match /mascotas/{mascotaId} {
+      allow create: if !isAuthenticated()
+        && request.resource.data.clinicaId != null
+        && request.resource.data.esReservaPublica == true;
+    }
+
+    // Usuarios
+    match /usuarios/{userId} {
+      allow read, write: if isOwner(userId);
+    }
+
+    // Invitaciones
+    match /invitations/{token} {
+      allow read: if true;
+      allow create: if isAuthenticated();
+      allow update, delete: if false;
+    }
+
+    // Carnets públicos
+    match /carnets/{token} {
+      allow read: if true;
+      allow write: if false;
+    }
+
+    // Tareas programadas (solo Cloud Functions)
+    match /scheduledTasks/{taskId} {
+      allow read, write: if false;
+    }
+
+    // Respuestas webhook (solo Cloud Functions)
+    match /webhookResponses/{responseId} {
+      allow read, write: if false;
+    }
+  }
+}
