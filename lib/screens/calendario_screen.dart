@@ -24,7 +24,7 @@ class _CalendarioScreenState extends State<CalendarioScreen> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final authProvider = Provider.of<AuthProvider>(context, listen: false);
-      if (authProvider.clinicaId != null) {
+      if (authProvider.clinicaId != null && !authProvider.modoDemo) {
         Provider.of<CalendarioProvider>(context, listen: false)
             .init(authProvider.clinicaId!);
       }

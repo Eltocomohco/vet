@@ -18,7 +18,7 @@ class _MascotasListScreenState extends State<MascotasListScreen> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final authProvider = Provider.of<AuthProvider>(context, listen: false);
-      if (authProvider.clinicaId != null) {
+      if (authProvider.clinicaId != null && !authProvider.modoDemo) {
         Provider.of<MascotasProvider>(context, listen: false)
             .init(authProvider.clinicaId!);
       }
