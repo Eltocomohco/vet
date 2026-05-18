@@ -6,6 +6,7 @@ import '../providers/clinica_provider.dart';
 import '../services/cita_service.dart';
 import '../services/whatsapp_service.dart';
 import '../utils/constantes.dart';
+import '../services/logger_service.dart';
 import 'selector_hora.dart';
 
 class ModalNuevaCita extends StatefulWidget {
@@ -153,9 +154,10 @@ class _ModalNuevaCitaState extends State<ModalNuevaCita> {
         Navigator.pop(context);
       }
     } catch (e) {
+      LoggerService.error('Error al crear cita', tag: 'CITA', exception: e);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: $e'), backgroundColor: kError),
+          const SnackBar(content: Text('No se pudo guardar la cita. Inténtalo de nuevo.'), backgroundColor: kError),
         );
       }
     } finally {

@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart' hide AuthProvider;
 import '../providers/auth_provider.dart';
 import '../services/auth_service.dart';
 import '../services/clinica_service.dart';
+import '../services/logger_service.dart';
 import '../models/clinica.dart';
 import '../utils/constantes.dart';
 
@@ -142,10 +143,11 @@ class _RegistroClinicaScreenState extends State<RegistroClinicaScreen> {
         Navigator.pushReplacementNamed(context, '/dashboard');
       }
     } catch (e) {
+      LoggerService.error('Error al registrar clínica', tag: 'REGISTRO', exception: e);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error: $e'),
+          const SnackBar(
+            content: Text('No se pudo completar el registro. Inténtalo de nuevo.'),
             backgroundColor: kError,
           ),
         );

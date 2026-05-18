@@ -14,6 +14,7 @@ import '../providers/mascotas_provider.dart';
 import '../services/mascota_service.dart';
 import '../services/vacuna_service.dart';
 import '../services/storage_service.dart';
+import '../services/logger_service.dart';
 import '../widgets/widgets.dart';
 import '../utils/constantes.dart';
 
@@ -94,9 +95,10 @@ class _MascotaDetailScreenState extends State<MascotaDetailScreen> {
         });
       }
     } catch (e) {
+      LoggerService.error('Error al cargar mascota', tag: 'MASCOTA_DETAIL', exception: e);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error al cargar mascota: $e'), backgroundColor: kError),
+          const SnackBar(content: Text('No se pudo cargar la información. Comprueba tu conexión.'), backgroundColor: kError),
         );
       }
     } finally {
@@ -141,9 +143,10 @@ class _MascotaDetailScreenState extends State<MascotaDetailScreen> {
         setState(() => _fotoUrl = url);
       }
     } catch (e) {
+      LoggerService.error('Error al subir foto', tag: 'MASCOTA_DETAIL', exception: e);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error al subir foto: $e'), backgroundColor: kError),
+          const SnackBar(content: Text('No se pudo subir la foto. Inténtalo de nuevo.'), backgroundColor: kError),
         );
       }
     }
@@ -214,9 +217,10 @@ class _MascotaDetailScreenState extends State<MascotaDetailScreen> {
         }
       }
     } catch (e) {
+      LoggerService.error('Error al guardar mascota', tag: 'MASCOTA_DETAIL', exception: e);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: $e'), backgroundColor: kError),
+          const SnackBar(content: Text('No se pudo guardar. Inténtalo de nuevo.'), backgroundColor: kError),
         );
       }
     } finally {
@@ -246,9 +250,10 @@ class _MascotaDetailScreenState extends State<MascotaDetailScreen> {
         await mascotasProvider.eliminarMascota(_mascotaId!);
         if (mounted) Navigator.pop(context);
       } catch (e) {
+        LoggerService.error('Error al eliminar mascota', tag: 'MASCOTA_DETAIL', exception: e);
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Error al eliminar: $e'), backgroundColor: kError),
+            const SnackBar(content: Text('No se pudo eliminar. Inténtalo de nuevo.'), backgroundColor: kError),
           );
         }
       }
@@ -260,9 +265,10 @@ class _MascotaDetailScreenState extends State<MascotaDetailScreen> {
       try {
         await VacunaService().eliminarVacuna(_mascotaId!, vacuna.id);
       } catch (e) {
+        LoggerService.error('Error al eliminar vacuna', tag: 'MASCOTA_DETAIL', exception: e);
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Error al eliminar vacuna: $e'), backgroundColor: kError),
+            const SnackBar(content: Text('No se pudo eliminar la vacuna. Inténtalo de nuevo.'), backgroundColor: kError),
           );
         }
       }
@@ -318,9 +324,10 @@ class _MascotaDetailScreenState extends State<MascotaDetailScreen> {
                   try {
                     await VacunaService().crearVacuna(_mascotaId!, nuevaVacuna);
                   } catch (e) {
+                    LoggerService.error('Error al guardar vacuna', tag: 'MASCOTA_DETAIL', exception: e);
                     if (mounted) {
                       messenger.showSnackBar(
-                        SnackBar(content: Text('Error al guardar vacuna: $e'), backgroundColor: kError),
+                        const SnackBar(content: Text('No se pudo guardar la vacuna. Inténtalo de nuevo.'), backgroundColor: kError),
                       );
                     }
                   }

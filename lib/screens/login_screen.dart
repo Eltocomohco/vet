@@ -5,6 +5,7 @@ import '../providers/clinica_provider.dart';
 import '../providers/mascotas_provider.dart';
 import '../providers/calendario_provider.dart';
 import '../services/biometric_service.dart';
+import '../services/logger_service.dart';
 import '../utils/constantes.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -91,9 +92,10 @@ class _LoginScreenState extends State<LoginScreen>
                   );
                 }
               } catch (e) {
+                LoggerService.error('Error al enviar email de restablecimiento', tag: 'LOGIN', exception: e);
                 if (mounted) {
                   messenger.showSnackBar(
-                    SnackBar(content: Text('Error: $e'), backgroundColor: kError),
+                    const SnackBar(content: Text('No se pudo enviar el correo. Comprueba que el email sea correcto.'), backgroundColor: kError),
                   );
                 }
               }
@@ -159,10 +161,11 @@ class _LoginScreenState extends State<LoginScreen>
         );
       }
     } catch (e) {
+      LoggerService.error('Error al iniciar sesión', tag: 'LOGIN', exception: e);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error al iniciar sesión: $e'),
+          const SnackBar(
+            content: Text('No se pudo iniciar sesión. Comprueba tu email y contraseña.'),
             backgroundColor: kError,
           ),
         );

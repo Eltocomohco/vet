@@ -7,6 +7,7 @@ import '../providers/auth_provider.dart';
 import '../providers/clinica_provider.dart';
 import '../services/seed_service.dart';
 import '../services/biometric_service.dart';
+import '../services/logger_service.dart';
 import '../utils/constantes.dart';
 
 class ConfiguracionScreen extends StatefulWidget {
@@ -153,9 +154,10 @@ class _ConfiguracionScreenState extends State<ConfiguracionScreen> {
         );
       }
     } catch (e) {
+      LoggerService.error('Error al guardar configuración', tag: 'CONFIG', exception: e);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: $e'), backgroundColor: kError),
+          const SnackBar(content: Text('No se pudieron guardar los cambios. Inténtalo de nuevo.'), backgroundColor: kError),
         );
       }
     } finally {
@@ -584,9 +586,10 @@ class _ConfiguracionScreenState extends State<ConfiguracionScreen> {
                               );
                             }
                           } catch (e) {
+                            LoggerService.error('Error al crear datos de prueba', tag: 'CONFIG', exception: e);
                             if (mounted) {
                               ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(content: Text('Error al crear datos: $e'), backgroundColor: kError),
+                                const SnackBar(content: Text('No se pudieron crear los datos de prueba. Inténtalo de nuevo.'), backgroundColor: kError),
                               );
                             }
                           }
@@ -751,10 +754,11 @@ class _ConfiguracionScreenState extends State<ConfiguracionScreen> {
                   );
                 }
               } catch (e) {
+                LoggerService.error('Error al generar invitación', tag: 'CONFIG', exception: e);
                 if (mounted) {
                   final messenger = ScaffoldMessenger.of(context);
                   messenger.showSnackBar(
-                    SnackBar(content: Text('Error generando invitación: $e'), backgroundColor: kError),
+                    const SnackBar(content: Text('No se pudo generar la invitación. Inténtalo de nuevo.'), backgroundColor: kError),
                   );
                 }
               }

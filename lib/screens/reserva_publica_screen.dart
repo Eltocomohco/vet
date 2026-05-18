@@ -5,6 +5,7 @@ import '../models/cita.dart';
 import '../models/mascota.dart';
 import '../services/cita_service.dart';
 import '../services/mascota_service.dart';
+import '../services/logger_service.dart';
 import '../utils/constantes.dart';
 
 /// Pantalla pública para reservar citas online sin necesidad de login.
@@ -205,10 +206,11 @@ class _ReservaPublicaScreenState extends State<ReservaPublicaScreen> {
         _mostrarDialogoExito(citaId, fechaHora);
       }
     } catch (e) {
+      LoggerService.error('Error al crear reserva pública', tag: 'RESERVA', exception: e);
       if (mounted) {
         setState(() => _isSubmitting = false);
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error al reservar: $e')),
+          const SnackBar(content: Text('No se pudo completar la reserva. Inténtalo de nuevo.')),
         );
       }
     }

@@ -48,7 +48,7 @@ class ErrorApp extends StatelessWidget {
               const SizedBox(height: 16),
               const Text('Error al iniciar VetClick', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
               const SizedBox(height: 16),
-              Text('Error: $error', style: const TextStyle(fontSize: 14)),
+              const Text('Algo salió mal al iniciar la aplicación. Por favor, recarga la página.', style: TextStyle(fontSize: 14)),
               const SizedBox(height: 16),
               Expanded(
                 child: SingleChildScrollView(
