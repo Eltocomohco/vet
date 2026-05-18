@@ -8,3 +8,4 @@ export 'configuracion_screen.dart';
 export 'carnet_publico_screen.dart';
 export 'reserva_publica_screen.dart';
 export 'splash_screen.dart';
+export 'logs_screen.dart';

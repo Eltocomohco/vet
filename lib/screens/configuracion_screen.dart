@@ -646,6 +646,18 @@ class _ConfiguracionScreenState extends State<ConfiguracionScreen> {
                     : const Text('Guardar Cambios', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
               ),
             ),
+            const SizedBox(height: 16),
+            // Card Debug / Logs
+            Card(
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              child: ListTile(
+                leading: const Icon(Icons.bug_report, color: Colors.grey),
+                title: const Text('Logs de Debug'),
+                subtitle: const Text('Ver errores y eventos de la app'),
+                trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+                onTap: () => Navigator.pushNamed(context, '/logs'),
+              ),
+            ),
             const SizedBox(height: 32),
           ],
         ),

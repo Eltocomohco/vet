@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:vetmanager/models/mascota.dart';
+import 'package:vetmanager/services/logger_service.dart';
 import 'package:vetmanager/utils/constantes.dart';
 
 /// Servicio que gestiona las operaciones CRUD de mascotas
@@ -52,11 +53,15 @@ class MascotaService {
   /// Crea una nueva mascota y retorna su ID
   Future<String> crearMascota(Mascota mascota) async {
     try {
+      LoggerService.info('Creando mascota: ${mascota.nombre} | clinicaId: ${mascota.clinicaId}', tag: 'MASCOTA');
       final DocumentReference docRef = await _mascotasCollection.add(
         mascota.toFirestore(),
       );
+      LoggerService.info('Mascota creada con ID: ${docRef.id}', tag: 'MASCOTA');
       return docRef.id;
-    } catch (e) {
+    } catch (e, stack) {
+      LoggerService.error('Error al crear mascota ${mascota.nombre}',
+          tag: 'MASCOTA', exception: e, stackTrace: stack);
       throw Exception('Error al crear la mascota: $e');
     }
   }
@@ -64,10 +69,14 @@ class MascotaService {
   /// Actualiza los datos de una mascota existente
   Future<void> actualizarMascota(Mascota mascota) async {
     try {
+      LoggerService.info('Actualizando mascota: ${mascota.id} | ${mascota.nombre}', tag: 'MASCOTA');
       await _mascotasCollection
           .doc(mascota.id)
           .update(mascota.toFirestore());
-    } catch (e) {
+      LoggerService.info('Mascota actualizada: ${mascota.id}', tag: 'MASCOTA');
+    } catch (e, stack) {
+      LoggerService.error('Error al actualizar mascota ${mascota.id}',
+          tag: 'MASCOTA', exception: e, stackTrace: stack);
       throw Exception('Error al actualizar la mascota: $e');
     }
   }
@@ -87,8 +96,12 @@ class MascotaService {
   /// Elimina una mascota físicamente de Firestore
   Future<void> eliminarMascota(String mascotaId) async {
     try {
+      LoggerService.info('Eliminando mascota: $mascotaId', tag: 'MASCOTA');
       await _mascotasCollection.doc(mascotaId).delete();
-    } catch (e) {
+      LoggerService.info('Mascota eliminada: $mascotaId', tag: 'MASCOTA');
+    } catch (e, stack) {
+      LoggerService.error('Error al eliminar mascota $mascotaId',
+          tag: 'MASCOTA', exception: e, stackTrace: stack);
       throw Exception('Error al eliminar la mascota: $e');
     }
   }

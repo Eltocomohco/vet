@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'screens/screens.dart';
 import 'screens/import_export_screen.dart';
+import 'screens/logs_screen.dart';
 import 'utils/constantes.dart';
 
 class VetClickApp extends StatelessWidget {
@@ -68,6 +69,7 @@ class VetClickApp extends StatelessWidget {
         '/carnet': (_) => const CarnetPublicoScreen(),
         '/importar-exportar': (_) => const ImportExportScreen(),
         '/reserva': (_) => const ReservaPublicaScreen(),
+        '/logs': (_) => const LogsScreen(),
       },
     );
   }

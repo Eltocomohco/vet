@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:vetmanager/models/usuario.dart';
 import 'package:vetmanager/services/auth_service.dart';
+import 'package:vetmanager/services/logger_service.dart';
 import 'package:vetmanager/utils/constantes.dart';
 
 /// Provider que gestiona el estado de autenticación del usuario
@@ -106,7 +107,7 @@ class AuthProvider extends ChangeNotifier {
         _usuario = Usuario.fromFirestore(doc);
       } else {
         // Usuario existe en Auth pero no en Firestore → crear documento basico
-        debugPrint('Usuario $userId no encontrado en Firestore. Creando documento basico...');
+        LoggerService.warn('Usuario $userId no encontrado en Firestore. Creando documento basico...', tag: 'AUTH');
         final User? currentUser = _authService.currentUser;
         final String email = currentUser?.email ?? '';
         final String nombre = currentUser?.displayName ?? email.split('@').first;
@@ -127,9 +128,11 @@ class AuthProvider extends ChangeNotifier {
             .set(nuevoUsuario.toFirestore());
 
         _usuario = nuevoUsuario;
+        LoggerService.info('Usuario $userId creado automaticamente en Firestore', tag: 'AUTH');
       }
-    } catch (e) {
-      debugPrint('Error al cargar/crear usuario en Firestore: $e');
+    } catch (e, stack) {
+      LoggerService.error('Error al cargar/crear usuario en Firestore',
+          tag: 'AUTH', exception: e, stackTrace: stack);
       _usuario = null;
     }
   }
@@ -156,9 +159,10 @@ class AuthProvider extends ChangeNotifier {
       _cargando = false;
       notifyListeners();
       return false;
-    } catch (e) {
+    } catch (e, stack) {
       _cargando = false;
       notifyListeners();
+      LoggerService.error('Error en login', tag: 'AUTH', exception: e, stackTrace: stack);
       rethrow;
     }
   }
@@ -201,9 +205,10 @@ class AuthProvider extends ChangeNotifier {
       _cargando = false;
       notifyListeners();
       return null;
-    } catch (e) {
+    } catch (e, stack) {
       _cargando = false;
       notifyListeners();
+      LoggerService.error('Error en registro', tag: 'AUTH', exception: e, stackTrace: stack);
       rethrow;
     }
   }
@@ -235,8 +240,9 @@ class AuthProvider extends ChangeNotifier {
 
       _usuario = nuevoUsuario;
       notifyListeners();
-    } catch (e) {
-      debugPrint('Error al crear usuario en Firestore: $e');
+    } catch (e, stack) {
+      LoggerService.error('Error al crear usuario en Firestore',
+          tag: 'AUTH', exception: e, stackTrace: stack);
       throw Exception('Error al crear usuario en Firestore: $e');
     }
   }

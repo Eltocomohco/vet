@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:vetmanager/models/cita.dart';
+import 'package:vetmanager/services/logger_service.dart';
 import 'package:vetmanager/utils/constantes.dart';
 
 /// Servicio que gestiona las operaciones CRUD de citas veterinarias
@@ -66,8 +67,11 @@ class CitaService {
   /// Actualiza los datos de una cita existente
   Future<void> actualizarCita(Cita cita) async {
     try {
+      LoggerService.info('Actualizando cita: ${cita.id}', tag: 'CITA');
       await _citasCollection.doc(cita.id).update(cita.toFirestore());
-    } catch (e) {
+    } catch (e, stack) {
+      LoggerService.error('Error al actualizar cita ${cita.id}',
+          tag: 'CITA', exception: e, stackTrace: stack);
       throw Exception('Error al actualizar la cita: $e');
     }
   }
