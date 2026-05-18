@@ -75,12 +75,17 @@ class AuthProvider extends ChangeNotifier {
 
     _authSubscription = _authService.authStateChanges.listen(
       (User? user) async {
-        _firebaseUser = user;
-
-        if (user != null) {
-          await _cargarUsuarioFirestore(user.uid);
+        if (_modoDemo && user != null) {
+          // Modo demo: ya creamos el usuario manualmente, solo actualizar referencia
+          _firebaseUser = user;
         } else {
-          _usuario = null;
+          _firebaseUser = user;
+
+          if (user != null) {
+            await _cargarUsuarioFirestore(user.uid);
+          } else {
+            _usuario = null;
+          }
         }
 
         _cargando = false;
@@ -279,21 +284,48 @@ class AuthProvider extends ChangeNotifier {
     }
   }
 
-  /// Entra en modo demo con datos de prueba
-  void entrarModoDemo() {
-    _modoDemo = true;
-    _firebaseUser = null;
-    _usuario = const Usuario(
-      id: 'demo',
-      nombre: 'Veterinario Demo',
-      email: 'demo@vetclick.app',
-      rol: rolAdmin,
-      clinicaId: 'demo-clinica',
-      telefono: '600123456',
-      activo: true,
-    );
-    _cargando = false;
-    notifyListeners();
+  /// Entra en modo demo con datos de prueba.
+  /// Usa autenticación anónima real para que Firestore acepte las operaciones.
+  Future<void> entrarModoDemo() async {
+    try {
+      _cargando = true;
+      notifyListeners();
+
+      final userCredential = await _authService.signInAnonymously();
+      final user = userCredential.user;
+
+      if (user != null) {
+        _modoDemo = true;
+        _firebaseUser = user;
+
+        final demoUsuario = Usuario(
+          id: user.uid,
+          nombre: 'Veterinario Demo',
+          email: 'demo@vetclick.app',
+          rol: rolAdmin,
+          clinicaId: 'demo-clinica',
+          telefono: '600123456',
+          activo: true,
+        );
+
+        await _firestore
+            .collection(coleccionUsuarios)
+            .doc(user.uid)
+            .set(demoUsuario.toFirestore(), SetOptions(merge: true));
+
+        _usuario = demoUsuario;
+        LoggerService.info('Modo demo activado con auth anónima: ${user.uid}', tag: 'AUTH');
+      }
+
+      _cargando = false;
+      notifyListeners();
+    } catch (e, stack) {
+      _modoDemo = false;
+      _cargando = false;
+      notifyListeners();
+      LoggerService.error('Error al entrar en modo demo', tag: 'AUTH', exception: e, stackTrace: stack);
+      rethrow;
+    }
   }
 
   /// Cierra la sesión del usuario

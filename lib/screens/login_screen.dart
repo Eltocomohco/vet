@@ -436,7 +436,7 @@ class _LoginScreenState extends State<LoginScreen>
     if (!mounted) return;
 
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
-    authProvider.entrarModoDemo();
+    await authProvider.entrarModoDemo();
 
     Provider.of<ClinicaProvider>(context, listen: false).cargarClinicaDemo();
     Provider.of<MascotasProvider>(context, listen: false).cargarMascotasDemo();

@@ -10,6 +10,20 @@ class AuthService {
   /// Stream que emite cambios en el estado de autenticación
   Stream<User?> get authStateChanges => _auth.authStateChanges();
 
+  /// Inicia sesión anónima (para modo demo)
+  /// Retorna el UserCredential si es exitoso
+  Future<UserCredential> signInAnonymously() async {
+    try {
+      final UserCredential userCredential =
+          await _auth.signInAnonymously();
+      return userCredential;
+    } on FirebaseAuthException catch (e) {
+      throw _handleAuthError(e);
+    } catch (e) {
+      throw Exception('Error inesperado al iniciar sesión anónima: $e');
+    }
+  }
+
   /// Inicia sesión con email y contraseña
   /// Retorna el UserCredential si es exitoso
   /// Lanza FirebaseAuthException si hay error
