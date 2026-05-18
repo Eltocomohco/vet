@@ -193,7 +193,13 @@ class _MascotaDetailScreenState extends State<MascotaDetailScreen> {
         chip: _chipController.text.trim().isEmpty ? null : _chipController.text.trim(),
         color: _colorController.text.trim().isEmpty ? null : _colorController.text.trim(),
         sexo: _sexo,
-        alergias: _alergiasController.text.trim().isEmpty ? [] : _alergiasController.text.trim().split(',').map((e) => e.trim()).toList(),
+        alergias: _alergiasController.text.trim().isEmpty
+            ? []
+            : _alergiasController.text.trim()
+                .split(',')
+                .map((e) => e.trim())
+                .where((e) => e.isNotEmpty)
+                .toList(),
         propietario: propietario,
         fotoUrl: _fotoUrl,
         creada: _fechaCreada ?? DateTime.now(),

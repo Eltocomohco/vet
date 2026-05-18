@@ -125,74 +125,89 @@ class _DashboardScreenState extends State<DashboardScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Estadísticas
-              Padding(
-                padding: const EdgeInsets.all(12),
-                child: Column(
-                  children: [
-                    Row(
-                      children: [
-                        Expanded(
-                          child: _StreamStatCard(
-                            icono: Icons.calendar_today_rounded,
-                            titulo: 'Citas Hoy',
-                            stream: _citaService.getCitasHoyStream(_clinicaId ?? ''),
-                            color: kPrimary,
+              Builder(builder: (context) {
+                final authProvider = Provider.of<AuthProvider>(context, listen: false);
+                final esDemo = authProvider.modoDemo;
+                final calendario = esDemo ? Provider.of<CalendarioProvider>(context) : null;
+                final mascotas = esDemo ? Provider.of<MascotasProvider>(context) : null;
+                final hoy = DateTime.now();
+                final inicioSemana = hoy.subtract(Duration(days: hoy.weekday - 1));
+                final finSemana = inicioSemana.add(const Duration(days: 6));
+                return Padding(
+                  padding: const EdgeInsets.all(12),
+                  child: Column(
+                    children: [
+                      Row(
+                        children: [
+                          Expanded(
+                            child: _StreamStatCard(
+                              icono: Icons.calendar_today_rounded,
+                              titulo: 'Citas Hoy',
+                              stream: esDemo ? null : _citaService.getCitasHoyStream(_clinicaId ?? ''),
+                              valorDirecto: esDemo ? calendario!.citasDelDia.length : null,
+                              color: kPrimary,
+                            ),
                           ),
-                        ),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: _StreamStatCard(
-                            icono: Icons.pending_actions_rounded,
-                            titulo: 'Pendientes',
-                            stream: _citaService.getCitasPendientesStream(_clinicaId ?? ''),
-                            color: kStatusPendiente,
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: _StreamStatCard(
+                              icono: Icons.pending_actions_rounded,
+                              titulo: 'Pendientes',
+                              stream: esDemo ? null : _citaService.getCitasPendientesStream(_clinicaId ?? ''),
+                              valorDirecto: esDemo ? calendario!.citas.where((c) => c.estado == 'pendiente').length : null,
+                              color: kStatusPendiente,
+                            ),
                           ),
-                        ),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: _StreamStatCard(
-                            icono: Icons.check_circle_rounded,
-                            titulo: 'Confirmadas',
-                            stream: _citaService.getCitasPorEstadoStream(_clinicaId ?? '', 'confirmada'),
-                            color: kStatusConfirmada,
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: _StreamStatCard(
+                              icono: Icons.check_circle_rounded,
+                              titulo: 'Confirmadas',
+                              stream: esDemo ? null : _citaService.getCitasPorEstadoStream(_clinicaId ?? '', 'confirmada'),
+                              valorDirecto: esDemo ? calendario!.citas.where((c) => c.estado == 'confirmada').length : null,
+                              color: kStatusConfirmada,
+                            ),
                           ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 8),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: _StreamStatCard(
-                            icono: Icons.cancel_rounded,
-                            titulo: 'Canceladas sem.',
-                            stream: _citaService.getCitasCanceladasSemanaStream(_clinicaId ?? ''),
-                            color: kStatusCancelada,
+                        ],
+                      ),
+                      const SizedBox(height: 8),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: _StreamStatCard(
+                              icono: Icons.cancel_rounded,
+                              titulo: 'Canceladas sem.',
+                              stream: esDemo ? null : _citaService.getCitasCanceladasSemanaStream(_clinicaId ?? ''),
+                              valorDirecto: esDemo ? calendario!.citas.where((c) => c.estado == 'cancelada' && c.fechaHora.isAfter(inicioSemana) && c.fechaHora.isBefore(finSemana)).length : null,
+                              color: kStatusCancelada,
+                            ),
                           ),
-                        ),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: _FutureStatCard(
-                            icono: Icons.pets,
-                            titulo: 'Mascotas',
-                            future: _mascotaService.getTotalMascotas(_clinicaId ?? ''),
-                            color: kPrimaryLight,
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: _FutureStatCard(
+                              icono: Icons.pets,
+                              titulo: 'Mascotas',
+                              future: esDemo ? null : _mascotaService.getTotalMascotas(_clinicaId ?? ''),
+                              valorDirecto: esDemo ? mascotas!.mascotas.length : null,
+                              color: kPrimaryLight,
+                            ),
                           ),
-                        ),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: _StreamStatCard(
-                            icono: Icons.date_range,
-                            titulo: 'Citas mes',
-                            stream: _citaService.getCitasMesStream(_clinicaId ?? ''),
-                            color: kAccent,
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: _StreamStatCard(
+                              icono: Icons.date_range,
+                              titulo: 'Citas mes',
+                              stream: esDemo ? null : _citaService.getCitasMesStream(_clinicaId ?? ''),
+                              valorDirecto: esDemo ? calendario!.citas.where((c) => c.fechaHora.month == hoy.month && c.fechaHora.year == hoy.year).length : null,
+                              color: kAccent,
+                            ),
                           ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
+                        ],
+                      ),
+                    ],
+                  ),
+                );
+              }),
               // Próximas citas
               const Padding(
                 padding: EdgeInsets.fromLTRB(16, 8, 16, 4),
@@ -349,18 +364,28 @@ class _DashboardScreenState extends State<DashboardScreen> {
 class _StreamStatCard extends StatelessWidget {
   final IconData icono;
   final String titulo;
-  final Stream<List<dynamic>> stream;
+  final Stream<List<dynamic>>? stream;
+  final int? valorDirecto;
   final Color color;
 
   const _StreamStatCard({
     required this.icono,
     required this.titulo,
-    required this.stream,
+    this.stream,
+    this.valorDirecto,
     required this.color,
   });
 
   @override
   Widget build(BuildContext context) {
+    if (valorDirecto != null) {
+      return EstadisticasCard(
+        icono: icono,
+        titulo: titulo,
+        valor: '$valorDirecto',
+        color: color,
+      );
+    }
     return StreamBuilder<List<dynamic>>(
       stream: stream,
       builder: (context, snapshot) {
@@ -380,18 +405,28 @@ class _StreamStatCard extends StatelessWidget {
 class _FutureStatCard extends StatelessWidget {
   final IconData icono;
   final String titulo;
-  final Future<int> future;
+  final Future<int>? future;
+  final int? valorDirecto;
   final Color color;
 
   const _FutureStatCard({
     required this.icono,
     required this.titulo,
-    required this.future,
+    this.future,
+    this.valorDirecto,
     required this.color,
   });
 
   @override
   Widget build(BuildContext context) {
+    if (valorDirecto != null) {
+      return EstadisticasCard(
+        icono: icono,
+        titulo: titulo,
+        valor: '$valorDirecto',
+        color: color,
+      );
+    }
     return FutureBuilder<int>(
       future: future,
       builder: (context, snapshot) {

@@ -438,15 +438,26 @@ class _LoginScreenState extends State<LoginScreen>
 
     if (!mounted) return;
 
-    final authProvider = Provider.of<AuthProvider>(context, listen: false);
-    await authProvider.entrarModoDemo();
+    try {
+      final authProvider = Provider.of<AuthProvider>(context, listen: false);
+      await authProvider.entrarModoDemo();
 
-    Provider.of<ClinicaProvider>(context, listen: false).cargarClinicaDemo();
-    Provider.of<MascotasProvider>(context, listen: false).cargarMascotasDemo();
-    Provider.of<CalendarioProvider>(context, listen: false).cargarCitasDemo();
+      Provider.of<ClinicaProvider>(context, listen: false).cargarClinicaDemo();
+      Provider.of<MascotasProvider>(context, listen: false).cargarMascotasDemo();
+      Provider.of<CalendarioProvider>(context, listen: false).cargarCitasDemo();
 
-    if (mounted) {
-      Navigator.pushReplacementNamed(context, '/dashboard');
+      if (mounted) {
+        Navigator.pushReplacementNamed(context, '/dashboard');
+      }
+    } catch (e) {
+      LoggerService.error('Error al entrar en modo demo', tag: 'LOGIN', exception: e);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('No se pudo activar el modo demo. Comprueba tu conexión.'), backgroundColor: kError),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _cargando = false);
     }
   }
 }

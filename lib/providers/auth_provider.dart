@@ -75,26 +75,35 @@ class AuthProvider extends ChangeNotifier {
 
     _authSubscription = _authService.authStateChanges.listen(
       (User? user) async {
-        if (_modoDemo && user != null) {
-          // Modo demo: ya creamos el usuario manualmente, solo actualizar referencia
-          _firebaseUser = user;
-        } else {
-          _firebaseUser = user;
-
-          if (user != null) {
-            await _cargarUsuarioFirestore(user.uid);
+        try {
+          if (_modoDemo && user != null) {
+            // Modo demo: ya creamos el usuario manualmente, solo actualizar referencia
+            _firebaseUser = user;
+          } else if (user != null && user.isAnonymous) {
+            // Usuario anónimo en proceso de entrar a demo: esperar a que entrarModoDemo() cree el doc
+            _firebaseUser = user;
           } else {
-            _usuario = null;
-          }
-        }
+            _firebaseUser = user;
 
-        _cargando = false;
-        notifyListeners();
+            if (user != null) {
+              await _cargarUsuarioFirestore(user.uid);
+            } else {
+              _usuario = null;
+            }
+          }
+
+          _cargando = false;
+          notifyListeners();
+        } catch (e, stack) {
+          _cargando = false;
+          notifyListeners();
+          LoggerService.error('Error en listener de auth', tag: 'AUTH', exception: e, stackTrace: stack);
+        }
       },
       onError: (Object error) {
         _cargando = false;
         notifyListeners();
-        debugPrint('Error en authStateChanges: $error');
+        LoggerService.error('Error en authStateChanges stream', tag: 'AUTH', exception: error);
       },
     );
   }

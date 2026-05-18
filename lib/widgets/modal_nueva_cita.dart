@@ -93,6 +93,13 @@ class _ModalNuevaCitaState extends State<ModalNuevaCita> {
       return;
     }
 
+    if (_motivo == null || _motivo!.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Selecciona un motivo para la cita'), backgroundColor: kError),
+      );
+      return;
+    }
+
     setState(() => _guardando = true);
 
     final fechaHora = DateTime(
