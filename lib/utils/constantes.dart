@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 
 // ==================== COLORES PRINCIPALES ====================
-const Color colorPrimario = Color(0xFF2E7D32);
-const Color colorPrimarioClaro = Color(0xFF4CAF50);
-const Color colorPrimarioOscuro = Color(0xFF1B5E20);
-const Color colorAcento = Color(0xFF66BB6A);
+const Color colorPrimario = Color(0xFF0D8B8B);
+const Color colorPrimarioClaro = Color(0xFF40C4C4);
+const Color colorPrimarioOscuro = Color(0xFF006666);
+const Color colorAcento = Color(0xFF26C6DA);
 
 // ==================== COLORES DE ESTADO ====================
 const Color colorEstadoPendiente = Color(0xFFFFA726);
-const Color colorEstadoConfirmada = Color(0xFF66BB6A);
+const Color colorEstadoConfirmada = Color(0xFF26C6DA);
 const Color colorEstadoEnProgreso = Color(0xFF42A5F5);
-const Color colorEstadoCompletada = Color(0xFF2E7D32);
+const Color colorEstadoCompletada = Color(0xFF0D8B8B);
 const Color colorEstadoCancelada = Color(0xFFEF5350);
 const Color colorEstadoNoShow = Color(0xFF78909C);
 
