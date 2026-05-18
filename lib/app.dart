@@ -46,15 +46,7 @@ class VetClickApp extends StatelessWidget {
           filled: true,
           fillColor: kSurface,
         ),
-        pageTransitionsTheme: PageTransitionsTheme(
-          builders: {
-            TargetPlatform.android: CupertinoPageTransitionsBuilder(),
-            TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
-            TargetPlatform.linux: CupertinoPageTransitionsBuilder(),
-            TargetPlatform.macOS: CupertinoPageTransitionsBuilder(),
-            TargetPlatform.windows: CupertinoPageTransitionsBuilder(),
-          },
-        ),
+        // Transiciones por defecto de Flutter (compatibles con todas las versiones)
       ),
       initialRoute: '/login',
       routes: {
