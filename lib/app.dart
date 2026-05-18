@@ -48,7 +48,6 @@ class VetClickApp extends StatelessWidget {
         ),
         // Transiciones por defecto de Flutter (compatibles con todas las versiones)
       ),
-      initialRoute: '/login',
       routes: {
         '/': (_) => const SplashScreen(),
         '/login': (_) => const LoginScreen(),

@@ -6,7 +6,7 @@
   "background_color": "#F5F5F5",
   "theme_color": "#2E7D32",
   "description": "VetClick - Software de gestión para clínicas veterinarias en A Coruña",
-  "orientation": "any",
+  "orientation": "portrait-primary",
   "prefer_related_applications": false,
   "icons": [
     {
