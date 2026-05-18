@@ -73,6 +73,15 @@ class _ModalNuevaCitaState extends State<ModalNuevaCita> {
 
   Future<void> _guardar() async {
     if (!_formKey.currentState!.validate()) return;
+    if (widget.clinicaId.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('No tienes una clínica asociada. Crea una clínica primero.'),
+          backgroundColor: Colors.orange,
+        ),
+      );
+      return;
+    }
     if (_mascotaSeleccionada == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(

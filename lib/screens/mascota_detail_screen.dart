@@ -152,10 +152,24 @@ class _MascotaDetailScreenState extends State<MascotaDetailScreen> {
   Future<void> _guardar() async {
     if (!_formKey.currentState!.validate()) return;
 
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+
+    // Validar que el usuario tiene una clinica asociada
+    if (authProvider.clinicaId == null || authProvider.clinicaId!.isEmpty) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('No tienes una clínica asociada. Crea una clínica primero desde el menú.'),
+            backgroundColor: Colors.orange,
+          ),
+        );
+      }
+      return;
+    }
+
     setState(() => _guardando = true);
 
     try {
-      final authProvider = Provider.of<AuthProvider>(context, listen: false);
       final mascotasProvider = Provider.of<MascotasProvider>(context, listen: false);
 
       final propietario = Propietario(

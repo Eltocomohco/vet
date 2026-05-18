@@ -31,7 +31,9 @@ class AuthProvider extends ChangeNotifier {
   bool get modoDemo => _modoDemo;
 
   /// Indica si hay un usuario autenticado
-  bool get estaAutenticado => _modoDemo || (_firebaseUser != null && _usuario != null);
+  /// NOTA: Ahora solo requiere FirebaseUser para permitir usuarios que existen
+  /// en Auth pero aun no tienen documento en Firestore (se crea automaticamente)
+  bool get estaAutenticado => _modoDemo || (_firebaseUser != null);
 
   /// ID de la clínica asociada al usuario
   String? get clinicaId => _usuario?.clinicaId;
@@ -91,7 +93,8 @@ class AuthProvider extends ChangeNotifier {
     );
   }
 
-  /// Carga los datos del usuario desde Firestore
+  /// Carga los datos del usuario desde Firestore.
+  /// Si no existe, crea un documento basico automaticamente.
   Future<void> _cargarUsuarioFirestore(String userId) async {
     try {
       final DocumentSnapshot doc = await _firestore
@@ -102,10 +105,31 @@ class AuthProvider extends ChangeNotifier {
       if (doc.exists) {
         _usuario = Usuario.fromFirestore(doc);
       } else {
-        _usuario = null;
+        // Usuario existe en Auth pero no en Firestore → crear documento basico
+        debugPrint('Usuario $userId no encontrado en Firestore. Creando documento basico...');
+        final User? currentUser = _authService.currentUser;
+        final String email = currentUser?.email ?? '';
+        final String nombre = currentUser?.displayName ?? email.split('@').first;
+
+        final Usuario nuevoUsuario = Usuario(
+          id: userId,
+          email: email,
+          nombre: nombre,
+          rol: rolAdmin, // Por defecto admin si se crea automaticamente
+          clinicaId: '', // Vacio hasta que cree una clinica
+          telefono: currentUser?.phoneNumber,
+          activo: true,
+        );
+
+        await _firestore
+            .collection(coleccionUsuarios)
+            .doc(userId)
+            .set(nuevoUsuario.toFirestore());
+
+        _usuario = nuevoUsuario;
       }
     } catch (e) {
-      debugPrint('Error al cargar usuario de Firestore: $e');
+      debugPrint('Error al cargar/crear usuario en Firestore: $e');
       _usuario = null;
     }
   }
