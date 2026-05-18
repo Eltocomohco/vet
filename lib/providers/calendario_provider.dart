@@ -217,6 +217,13 @@ class CalendarioProvider extends ChangeNotifier {
 
       final String citaId = await _citaService.crearCita(cita);
 
+      // Agregar a lista local inmediatamente (funciona en demo y normal)
+      final int index = _citas.indexWhere((Cita c) => c.id == citaId);
+      if (index < 0) {
+        _citas.add(cita.copyWith(id: citaId));
+        _actualizarCitasDelDia();
+      }
+
       _cargando = false;
       notifyListeners();
       return citaId;

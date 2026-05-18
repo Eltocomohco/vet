@@ -245,6 +245,13 @@ class MascotasProvider extends ChangeNotifier {
       final String mascotaId =
           await _mascotaService.crearMascota(mascota);
 
+      // Agregar a lista local inmediatamente (funciona en demo y normal)
+      final int index = _mascotas.indexWhere((Mascota m) => m.id == mascotaId);
+      if (index < 0) {
+        _mascotas.add(mascota.copyWith(id: mascotaId));
+        _aplicarFiltro();
+      }
+
       _cargando = false;
       notifyListeners();
       return mascotaId;
