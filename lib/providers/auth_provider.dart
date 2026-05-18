@@ -110,6 +110,10 @@ class AuthProvider extends ChangeNotifier {
 
       if (doc.exists) {
         _usuario = Usuario.fromFirestore(doc);
+        // Auto-detectar modo demo si el documento tiene clinicaId demo
+        if (_usuario!.clinicaId == 'demo-clinica') {
+          _modoDemo = true;
+        }
       } else {
         // Usuario existe en Auth pero no en Firestore → crear documento basico
         LoggerService.warn('Usuario $userId no encontrado en Firestore. Creando documento basico...', tag: 'AUTH');
