@@ -45,7 +45,7 @@ class _CalendarioScreenState extends State<CalendarioScreen> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Motivo: ${cita.motivo}', style: const TextStyle(fontSize: 15)),
+            Text('Motivo: ${cita.motivoDisplay}', style: const TextStyle(fontSize: 15)),
             const SizedBox(height: 4),
             Text('Dueño: ${cita.propietarioNombre}', style: const TextStyle(fontSize: 15)),
             const SizedBox(height: 4),

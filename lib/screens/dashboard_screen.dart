@@ -176,7 +176,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           Expanded(
                             child: _StreamStatCard(
                               icono: Icons.cancel_rounded,
-                              titulo: 'Canceladas sem.',
+                              titulo: 'Canceladas',
                               stream: esDemo ? null : _citaService.getCitasCanceladasSemanaStream(_clinicaId ?? ''),
                               valorDirecto: esDemo ? calendario!.citas.where((c) => c.estado == 'cancelada' && c.fechaHora.isAfter(inicioSemana) && c.fechaHora.isBefore(finSemana)).length : null,
                               color: kStatusCancelada,
@@ -196,7 +196,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           Expanded(
                             child: _StreamStatCard(
                               icono: Icons.date_range,
-                              titulo: 'Citas mes',
+                              titulo: 'Citas Mes',
                               stream: esDemo ? null : _citaService.getCitasMesStream(_clinicaId ?? ''),
                               valorDirecto: esDemo ? calendario!.citas.where((c) => c.fechaHora.month == hoy.month && c.fechaHora.year == hoy.year).length : null,
                               color: kAccent,

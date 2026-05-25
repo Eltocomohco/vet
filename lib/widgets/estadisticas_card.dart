@@ -37,13 +37,16 @@ class EstadisticasCard extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 4),
-              Text(
-                titulo,
-                style: const TextStyle(
-                  fontSize: 12,
-                  color: kTextSecondary,
+              FittedBox(
+                fit: BoxFit.scaleDown,
+                child: Text(
+                  titulo,
+                  style: const TextStyle(
+                    fontSize: 12,
+                    color: kTextSecondary,
+                  ),
+                  textAlign: TextAlign.center,
                 ),
-                textAlign: TextAlign.center,
               ),
             ],
           ),

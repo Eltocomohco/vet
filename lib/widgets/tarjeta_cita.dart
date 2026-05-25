@@ -67,7 +67,7 @@ class TarjetaCita extends StatelessWidget {
                     ),
                     const SizedBox(height: 2),
                     Text(
-                      cita.motivo,
+                      cita.motivoDisplay,
                       style: const TextStyle(
                         fontSize: 13,
                         color: kTextSecondary,
