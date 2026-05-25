@@ -123,7 +123,7 @@ class Mascota {
       chip: data['chip'] as String?,
       color: data['color'] as String?,
       sexo: data['sexo'] ?? 'Desconocido',
-      propietario: data['propietario'] != null
+      propietario: data['propietario'] is Map
           ? Propietario.fromMap(
               Map<String, dynamic>.from(data['propietario'] as Map))
           : const Propietario(nombre: '', telefono: ''),

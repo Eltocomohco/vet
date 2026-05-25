@@ -37,14 +37,14 @@ class Clinica {
       direccion: data['direccion'] ?? '',
       telefono: data['telefono'] ?? '',
       email: data['email'] ?? '',
-      horario: data['horario'] != null
+      horario: data['horario'] is Map
           ? Map<String, dynamic>.from(data['horario'] as Map)
           : {},
       plan: data['plan'] ?? 'basico',
       veterinarios: data['veterinarios'] != null
           ? List<String>.from(data['veterinarios'] as List)
           : [],
-      configuracionWhatsApp: data['configuracionWhatsApp'] != null
+      configuracionWhatsApp: data['configuracionWhatsApp'] is Map
           ? Map<String, dynamic>.from(
               data['configuracionWhatsApp'] as Map)
           : {},

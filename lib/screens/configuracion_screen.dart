@@ -64,7 +64,9 @@ class _ConfiguracionScreenState extends State<ConfiguracionScreen> {
     _whatsappController.text = config['numero'] ?? '';
     _plantillaRecordatorioController.text = config['plantillaRecordatorio'] ?? '';
     _plantillaVacunaController.text = config['plantillaVacuna'] ?? '';
-    final recordatorios = config['recordatorios'] as Map<String, dynamic>?;
+    final recordatorios = config['recordatorios'] is Map<String, dynamic>
+        ? Map<String, dynamic>.from(config['recordatorios'] as Map)
+        : null;
     if (recordatorios != null) {
       _recordatorio24h = recordatorios['24h'] ?? true;
       _recordatorio2h = recordatorios['2h'] ?? true;
@@ -73,15 +75,21 @@ class _ConfiguracionScreenState extends State<ConfiguracionScreen> {
     final horario = clinica.horario;
     for (int i = 0; i < 7; i++) {
       final diaKey = _dias[i].toLowerCase();
-      final diaData = horario[diaKey] as Map<String, dynamic>?;
+      final diaData = horario[diaKey] is Map<String, dynamic>
+          ? Map<String, dynamic>.from(horario[diaKey] as Map)
+          : null;
       if (diaData != null) {
         _abierto[i] = diaData['abierto'] ?? true;
-        final manana = diaData['manana'] as Map<String, dynamic>?;
+        final manana = diaData['manana'] is Map<String, dynamic>
+            ? Map<String, dynamic>.from(diaData['manana'] as Map)
+            : null;
         if (manana != null) {
           _mananaInicio[i].text = manana['inicio'] ?? '09:00';
           _mananaFin[i].text = manana['fin'] ?? '14:00';
         }
-        final tarde = diaData['tarde'] as Map<String, dynamic>?;
+        final tarde = diaData['tarde'] is Map<String, dynamic>
+            ? Map<String, dynamic>.from(diaData['tarde'] as Map)
+            : null;
         if (tarde != null) {
           _tardeInicio[i].text = tarde['inicio'] ?? '17:00';
           _tardeFin[i].text = tarde['fin'] ?? '20:00';
